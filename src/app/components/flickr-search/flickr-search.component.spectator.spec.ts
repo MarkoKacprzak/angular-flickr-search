@@ -1,4 +1,4 @@
-import { createComponentFactory, mockProvider, Spectator } from '@ngneat/spectator';
+import { createComponentFactory, mockProvider, Spectator, SpyObject } from '@ngneat/spectator';
 import { MockComponents } from 'ng-mocks';
 import { of } from 'rxjs';
 import { FlickrService } from 'src/app/services/flickr.service';
@@ -28,7 +28,8 @@ describe('FlickrSearchComponent with spectator', () => {
   beforeEach(() => {
     spectator = createComponent();
 
-    spectator.inject(FlickrService).searchPublicPhotos.and.returnValue(of(photos));
+    const sp: SpyObject<FlickrService> = spectator.inject(FlickrService);
+    sp.searchPublicPhotos.and.returnValue(of(photos));
 
     searchForm = spectator.query(SearchFormComponent);
     photoList = spectator.query(PhotoListComponent);
@@ -42,6 +43,7 @@ describe('FlickrSearchComponent with spectator', () => {
     expect(photoList.title).toBe('');
     expect(photoList.photos).toEqual([]);
     expect(fullPhoto).not.toExist();
+    expect(fullPhoto).toBeNull();
   });
 
   it('searches and passes the resulting photos to the photo list', () => {
